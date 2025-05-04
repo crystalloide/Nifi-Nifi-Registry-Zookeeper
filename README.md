@@ -51,7 +51,7 @@ ______________________________________________________________
 #### 
 
 
-## Lançons donc l'environnement : (version Apache Nifi 2.3.0 )
+## Lançons donc l'environnement : (version Apache Nifi 1.28.1 )
 ______________________________________________________________	
     docker compose -f 'TP06c_-_Cluster_Nifi_1.28.1_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml' up -d
 
@@ -146,7 +146,10 @@ URL : https://nifi1:8443/nifi
 #### Puis le mot de passe : 
     nifipassword
 
-#### Remarque  : pour arrêter si besoin :
+#### Remarque  : pour arrêter si besoin : (version Apache Nifi 1.28.1 )
+    docker compose -f 'TP06c_-_Cluster_Nifi_1.28.1_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml' down
+    
+#### Remarque  : pour arrêter si besoin : (version Apache Nifi 2.3.0 )
     docker compose -f 'TP06d_-_Cluster_Nifi_2.3.0_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml' down
-
+    
 ### Fin du TP
