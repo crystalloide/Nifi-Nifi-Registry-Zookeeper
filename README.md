@@ -4,9 +4,7 @@
 
 ### Pour ouvrir un environnement Gitpod en ligne avec un simple navigateur web : 
 
-'''
-cd ~
-'''
+    cd ~
 
 sudo vi /etc/hosts
 
