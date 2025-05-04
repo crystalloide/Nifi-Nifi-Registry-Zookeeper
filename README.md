@@ -172,5 +172,363 @@ URL : https://nifi1:8443/nifi
     
 #### Remarque  : pour arrêter si besoin : (version Apache Nifi 2.3.0 )
     docker compose -f 'TP06d_-_Cluster_Nifi_2.3.0_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml' down
-    
+
+
+
+__________________________________________________________________________________________________
+### Autre expérimentation : 
+### Pour lancer un ensemble Nifi et Kafka :
+
+    cd ~/Nifi-Nifi-Registry-Zookeeper
+    docker compose -f 'TP05a_-_Lancement_Kafka_docker_Kafka-NiFi.yml' up -d
+
+
+__________________________________________________________________________________________________
+## On vérifie que les conteneurs sont bien en cours d'exécution : 
+docker ps -a
+
+## Affichage : 
+	CONTAINER ID   IMAGE                              COMMAND                  CREATED              STATUS              PORTS                                                                                                                                        NAMES
+	c074d040ec51   confluentinc/cp-kafka:latest       "/etc/confluent/dock…"   About a minute ago   Up About a minute   0.0.0.0:9092->9092/tcp, :::9092->9092/tcp                                                                                                    kafka
+	bc8c339e3498   confluentinc/cp-zookeeper:latest   "/etc/confluent/dock…"   About a minute ago   Up About a minute   2181/tcp, 2888/tcp, 3888/tcp                                                                                                                 zookeeper
+	5edd2bf720dd   apache/nifi:latest                 "../scripts/start.sh"    About a minute ago   Up About a minute   0.0.0.0:8000->8000/tcp, :::8000->8000/tcp, 0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 0.0.0.0:8443->8443/tcp, :::8443->8443/tcp, 10000/tcp   nifi
+
+
+## On vérifie que le conteneur Kafka est bien à l'écoute : 
+netstat -anl | grep 909
+
+## Affichage pour Kafka : 
+	tcp        0      0 0.0.0.0:9092            0.0.0.0:*               LISTEN     
+	tcp6       0      0 :::9092                 :::*                    LISTEN     
+
+
+
+__________________________________________________________________________________________________
+#### Connection à l'IUI nifi :  
+__________________________________________________________________________________________________
+
+#### On se connecte sur le conteneur Nifi pour récupérer les identifiants de connexion (générés aléatoirement dans le cas présent) : 
+#### Remarque : on aurait pu aussi les passer en paramètres dans le fichier docker-compose pour indiquer un user/mot de passe.
+    docker exec -it nifi bash 
+
+    cat /opt/nifi/nifi-current/logs/*.log | grep "Generated"
+
+#### Affichage : (exemple) 
+#### nifi@82c0f0bf857f:/opt/nifi/nifi-current$ cat /opt/nifi/nifi-current/logs/*.log | grep "Generated"
+#### Generated Username [150248a6-bf21-455a-ba2e-68b28cf4a5b8]
+#### Generated Password [fdnaz55nAokJ6wOjh71KD4OHYLGd61LH]
+#### 2025-03-13 10:11:19,047 INFO [main] o.a.n.b.c.GetRunCommandBootstrapCommand Generated Self-Signed Certificate Expiration: 2025-05-12
+#### 2025-03-13 10:11:19,047 INFO [main] o.a.n.b.c.GetRunCommandBootstrapCommand Generated Self-Signed Certificate SHA-256: C9BFB568B4D36760DB463650D0B74C86DAE4A31F0638776CF2760599AE1EFA4E
+
+
+#### Les valeurs qui nous intéressent (dans notre exemple : 
+	Generated Username [150248a6-bf21-455a-ba2e-68b28cf4a5b8]
+	Generated Password [fdnaz55nAokJ6wOjh71KD4OHYLGd61LH]
+
+#### On ressort du conteneur "nifi" : 
+    exit
+
+
+#### Et à partir du navigateur (Firefox ici), 
+#### on utilise les identifiants de connexion sur l'UI Nifi :
+### URL : 
+    https://localhost:8443/nifi
+
+
+__________________________________________________________________________________________________
+#### Utilisation de Kafka :  
+__________________________________________________________________________________________________
+
+#### On vérifie que le conteneur Kafka est bien à l'écoute : 
+
+netstat -anl | grep 909
+
+#### Affichage pour Kafka : 
+	tcp        0      0 0.0.0.0:9092            0.0.0.0:*               LISTEN     
+	tcp6       0      0 :::9092                 :::*                    LISTEN     
+
+
+
+#### On va dans le conteneur pour initaliser notre environnement kafka 
+#### et pouvoir s'en servir ensuite dans nifi : 
+
+    docker exec -it kafka bash 
+
+
+#### On regarde la version de kafka :
+    kafka-topics -version
+
+
+
+#### Affichage :
+    7.8.2-ccs
+
+#### Pour faire l'équivalence entre les version Confluent et Open Source :
+#### https://www.kineticedge.io/resources/confluent-community-versions/
+
+
+
+#### On crée le topic "test-topic" :
+    kafka-topics --create --topic test-topic  --bootstrap-server localhost:9092 
+
+#### Affichage :  
+	Created topic test-topic.
+
+
+#### On alimente le topic "test-topic" avec quelques messages :
+    kafka-console-producer --topic test-topic --bootstrap-server localhost:9092
+
+#### Saisir quelques messages : 
+    Test1
+    Test2
+    ...
+#### (Ctrl-C pour quitter)
+
+
+#### On vérifie que le topic "test-topic" contient bien nos quelques messages :
+kafka-console-consumer --topic test-topic --bootstrap-server localhost:9092 --from-beginning
+
+#### Affichage : 
+Test1
+Test2
+...
+#### (Ctrl-C pour quitter)
+
+
+
+__________________________________________________________________________________________________
+#### Intéraction entre Nifi et Kafka :  
+__________________________________________________________________________________________________
+
+#### On retourne maintenant dans le canevas nifi pour définir et paramétrer un processeur :
+#### Dans le navigateur web : URL : https://localhost:8443/nifi
+
+
+#### Pour intéragir avec Kafka depuis Nifi  :  
+
+_________________________________________________
+#### Ecriture de messages dans un topic Kafka :
+_________________________________________________
+		
+#### On ajoute d'abord un processor GenerateFlowFile pour générer du JSON que l'on va ensuite écrire dans notre topic
+		
+#### Remarque : on écrit impérativement du JSON ici (du simple texte ne sera pas pris en compte)
+
+#### Exemple : 
+
+[{"user_id":1,"username":"ecartner0","email":"emackim0@lulu.com","age":40,"gender":"Agender","country":"China","job_title":"VP Sales","salary":62400.29,"join_date":"7/21/2012","active_status":false},
+{"user_id":2,"username":"jcelle1","email":"twallerbridge1@webmd.com","age":27,"gender":"Male","country":"Brazil","job_title":"Food Chemist","salary":104092.27,"join_date":"8/29/2018","active_status":true}]
+
+
+
+#### On ajoute ensuite le processor PublishKafka sur le canevas de l'UI Nifi : 
+#### (sera "PublishKafka 2.3.0" à la date d'actualisation de ce TP)
+
+
+#### Paramètrage du processor sur Kafka : (onglet Properties dans la fenêtre "Edit Processor")
+#### Ici par exemple PublishKafka_2_3_0
+
+	Kafka Connection Service		No value set					=> 	Faire "+" (= "Add  Controller Service")
+																		puis choisir "Kafka3ConnectionService"
+																		et enfin activer le controller "Kafka3ConnectionService"
+>>>	Topic Name						test-topic
+	Failure Strategy				Route to Failure
+	Delivery Guarantee				Guarantee Replicated Delivery
+	Compression Type				none
+	Max Request Size				1 MB
+>>>	Transactions Enabled			false
+	Transactional ID Prefix			No value set
+	Partitioner Class				DefaultPartitioner
+>>	Partition						0							<<<< IMPORTANT : on compte à partir de 0 dans Kafka :-)
+	Message Demarcator				No value set
+	Record Reader					No value set
+	Record Writer					No value set
+	Kafka Key						No value set
+
+
+
+
+#### Dans l'onglet "Relationships" du processor PublishKafka 2.3.0 : 
+#### sélectionner ("x" ci-dessous ) et faire "Apply" 
+
+Automatically Terminate/Retry Relationships
+
+failure
+	x terminate		_ retry
+
+	Any FlowFile that cannot be sent to Kafka will be routed to this Relationship
+
+
+success
+
+	x terminate		_ retry
+	
+	FlowFiles for which all content was sent to Kafka.
+ 
+
+
+
+
+#### Paramétrage du Controller Service Kafka : 
+#### =>Faire "Edit Controller Service" sur "Kafka3ConnectionService 2.3.0"
+
+
+>>>	Bootstrap Servers				kafka:29092
+	Security Protocol				PLAINTEXT
+>>>	SASL Mechanism					PLAIN
+>>>	SASL Username					admin
+>>>	SASL Password					admin
+	Kerberos User Service			No value set
+	Kerberos Service Name			No value set
+	SSL Context Service				No value set
+	Transaction Isolation Level		Read Committed
+	Max Poll Records				10000
+	Client Timeout					60 sec
+	Max Metadata Wait Time			5 sec
+	Acknowledgment Wait Time		5 sec 
+
+
+#### Important: Veiller à faire "enabled " sur le service (et seulement le service)
+
+
+
+#### On teste enfin la validité du processeur ainsi paramétré :  
+#### Verification Results : ok 
+
+#### Affichage : 
+	Verification Results
+		v 	Perform Validation
+			Component Validation passed
+		
+		v 	Determine Topic Partitions
+			Determined that there are 1 partitions for topic test-topic
+			
+			
+	
+
+#### Exemple pour une version Nifi plus ancienne (1.28.x par exemple) :
+
+#### Paramètrage du processor sur Kafka : (onglet Properties dans la fenêtre "Edit Processor")
+#### Ici par exemple PublishKafka_2_6_1.27.0
+
+>	Kafka Brokers					kafka:29092
+> 	Topic Name						test-topic
+> 	Use Transactions				false
+	Message Demarcator				No value set
+>	Failure Strategy				Route to Failure
+>	Delivery Guarantee				Guarantee Single Node Delivery
+	Attributes to Send as Headers (Regex)		No value set
+	Message Header Encoding			UTF-8
+>	Security Protocol				PLAINTEXT
+>	SASL Mechanism					PLAIN	
+	Kerberos Credentials Service	No value set
+	Kerberos User Service			No value set
+	Kerberos Service Name			No value set
+	Kerberos Principal				No value set
+	Kerberos Keytab					No value set
+>	Username						admin
+>	Password						admin
+	SSL Context Service				No value set
+	Kafka Key						No value set	
+>	Key Attribute Encoding			UTF-8 Encoded
+>	Max Request Size				1 MB
+>	Acknowledgment Wait Time		5 secs
+>	Max Metadata Wait Time			5 sec
+	Partitioner class				DefaultPartitioner
+>	Partition						0							<<<< IMPORTANT : on compte à partir de 0 dans Kafka :-)
+>	Compression Type				none
+
+
+
+
+
+_________________________________________________
+#### Ecriture de messages dans un topic Kafka :
+_________________________________________________
+				
+#### On fait de même avec cette fois un processeur qui va écrire les messages précédemment lus : 
+
+### On drop le processor PublishKafka sur le canevas de l'UI Nifi : 
+#### (ca sera "ConsumeKafka 2.3.0" à la date d'actualisation de ce TP)
+
+
+
+>>>	Kafka Connection Service		Kafka3ConnectionService  ( => Ne pas en créer un nouveau : il faut juste le sélectionner dans la liste)
+>>> Group ID						CGRP1
+	Topic Format					names
+>>>	Topics							test-topic
+	Auto Offset Reset				latest
+	Commit Offsets					true
+	Max Uncommitted Time			1 sec
+	Header Name Pattern				No value set
+	Header Encoding					UTF-8
+	Processing Strategy				FLOW_FILE 
+
+
+
+#### Dans l'onglet "Relationships" du processor ConsumeKafka 2.3.0 : 
+#### sélectionner ("x" ci-dessous ) et faire "Apply" 
+
+Automatically Terminate/Retry Relationships
+
+
+success
+																		Number of Retry Attemps 
+	x terminate		x retry												10
+	
+	FlowFiles for which all content was sent to Kafka.					Retry Back Off Policy 
+																		10 mins
+
+
+
+
+#### Remarque : exemple pour cette fois une version de Nifi plus ancienne (1.28x) : 
+
+#### ConsumeKafka_2_6 1.27.0 
+
+
+>	Kafka Brokers			kafka:29092
+>	Topic Name(s)			test-topic
+>	Topic Name Format		names
+>	Group ID				CGRP1
+	Commit Offsets			true
+	Max Uncommitted Time	1 secs
+>	Honor Transactions		false
+	Message Demarcator		No value set
+	Separate By Key			false
+>	Security Protocol		PLAINTEXT
+>	SASL Mechanism			PLAIN
+	Kerberos Credentials Service	No value set
+	Kerberos User Service			No value set
+	Kerberos Service Name			No value set
+	Kerberos Principal				No value set
+	Kerberos Keytab					No value set
+>	Username				admin
+>	Password				admin
+	SSL Context Service		No value set
+>	Key Attribute Encoding	UTF-8 Encoded
+>	Offset Reset			latest
+	Message Header Encoding		UTF-8
+	Headers to Add as Attributes (Regex)		No value set
+	Max Poll Records		10000
+>	Communications Timeout	60 secs
+
+
+_________________________________________________
+#### Pour voir dans la log les informations confirmant que l'on a bien lu et écrit les messages depuis kafka : 
+    docker exec -it nifi bash
+    ls /home/nifi 
+    exit
+
+_________________________________________________
+#### Remarque  : pour stopper si besoin :
+    docker compose -f 'TP05a_-_Lancement_Kafka_docker_Kafka-NiFi.yml' stop
+
+_________________________________________________
+#### Remarque  : pour supprimer complètement si besoin :
+    docker compose -f 'TP05a_-_Lancement_Kafka_docker_Kafka-NiFi.yml' down
+
+
+_________________________________________________    
 ### Fin du TP
+_________________________________________________
