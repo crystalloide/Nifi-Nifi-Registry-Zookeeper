@@ -20,6 +20,23 @@
     192.168.0.23 nifi3
     192.168.0.30 nifi-registry
 
+
+
+
+#### Nettoyage des volumes restants d'éventuels lancements précédents : 
+    docker volume prune -a -f
+    docker volume ls
+    docker ps -a
+
+
+#### Nettoyage de répertoire restant d'un éventuel lancement précédent : 
+    sudo rm -Rf /home/user/ssl/nifi_certs
+    sudo rm -Rf /home/user/ssl
+    mkdir -p /home/user/ssl/nifi_certs
+    sudo chmod 777 -Rf /home/user/ssl/nifi_certs
+    ls
+
+
 #### On affiche le contenu de notre fichier qui servira à docker compose : (version Apache Nifi 1.28.1 )
     cat 'TP06c_-_Cluster_Nifi_1.28.1_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml'
     
