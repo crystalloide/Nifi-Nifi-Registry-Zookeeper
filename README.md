@@ -2,17 +2,15 @@
 
 ### Rappel : nous sommes ici : [https://github.com/crystalloide/mongoDB](https://github.com/crystalloide/Nifi-Nifi-Registry-Zookeeper/edit/main/README.md)
 
-### Pour ouvrir un environnement Gitpod en ligne avec un simple navigateur web : 
-
     cd ~
 
 sudo vi /etc/hosts
 
-## rajouter 
-192.168.0.21 nifi1
-192.168.0.22 nifi2
-192.168.0.23 nifi3
-192.168.0.30 nifi-registry
+#### rajouter 
+    192.168.0.21 nifi1
+    192.168.0.22 nifi2
+    192.168.0.23 nifi3
+    192.168.0.30 nifi-registry
 
 
 #### Pour récupérer la dernière version de l'image mongoDB disponible dans Docker Hub : 
