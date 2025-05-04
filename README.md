@@ -176,8 +176,9 @@ URL : https://nifi1:8443/nifi
 
 
 __________________________________________________________________________________________________
-### Autre expérimentation : 
-### Pour lancer un ensemble Nifi et Kafka :
+## Autre expérimentation : 
+__________________________________________________________________________________________________
+## Pour lancer un ensemble Nifi et Kafka :
 
     cd ~/Nifi-Nifi-Registry-Zookeeper
     docker compose -f 'TP05a_-_Lancement_Kafka_docker_Kafka-NiFi.yml' up -d
