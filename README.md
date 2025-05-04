@@ -42,7 +42,14 @@
     
 #### On affiche le contenu de notre fichier qui servira à docker compose : (version Apache Nifi 2.3.0 )
     cat 'TP06d_-_Cluster_Nifi_2.3.0_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml'
-    
+
+    cp 'TP06c_-_Cluster_Nifi_1.28.1_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml' ~
+    cp 'TP06d_-_Cluster_Nifi_2.3.0_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml' ~
+
+#### Vérifions la présence de nos deux fichiers :  
+    cd ~
+    ls
+
 ______________________________________________________________
 #### Configuration :
 ______________________________________________________________	
