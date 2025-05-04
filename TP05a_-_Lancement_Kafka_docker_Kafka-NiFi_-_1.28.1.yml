@@ -1,0 +1,50 @@
+services:
+  zookeeper:
+    hostname: zookeeper
+    container_name: zookeeper    
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    # -----------------------------------------------------------------------
+    # Point important concernant les accès à Kafka 
+    # à partir de client en provenance d'autres hosts  
+    # -----------------------------------------------------------------------
+    #
+    # La configuration utilisée ici expose le port 9092 pour les connexions externes vers le broker
+    # c'est-à-dire celles provenant de _l'extérieur_ du réseau Docker. 
+    # Cela peut provenir de la machine hôte exécutant Docker, 
+    # ou peut-être plus loin (si vous avez une configuration plus compliquée).
+    # Dans ce dernier cas, vous devrez modifier la valeur 'localhost' dans
+    # KAFKA_ADVERTISED_LISTENERS en une valeur pouvant être résolue sur l'hôte Docker à partir de ces
+    # clients distants
+    #
+    # Pour les connexions _internes_ au réseau Docker, telles que celles provenant d'autres services
+    # et composants, utiliser "kafka:29092"
+    #
+    #
+    hostname: kafka
+    container_name: kafka    
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  nifi:
+    image: apache/nifi:1.28.1
+    hostname: nifi
+    container_name: nifi    
+    ports:
+      - 8080:8080
+      - 8443:8443
+      - 8000:8000
