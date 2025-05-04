@@ -5,7 +5,7 @@
     cd ~
 
 #### On rajoute les futurs conteneurs dans le host de la machine : 
-sudo vi /etc/hosts
+    sudo vi /etc/hosts
 
 #### rajouter 
     192.168.0.21 nifi1
