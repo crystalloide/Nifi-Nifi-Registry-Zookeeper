@@ -1,16 +1,21 @@
-## MongoDB : installation, lancement, puis utilisation dans gitpod
+## MongoDB : installation, lancement, puis utilisation dans WSL2 ou VM Ubuntu 
 
-### Rappel : nous sommes ici : https://github.com/crystalloide/mongoDB
+### Rappel : nous sommes ici : [https://github.com/crystalloide/mongoDB](https://github.com/crystalloide/Nifi-Nifi-Registry-Zookeeper/edit/main/README.md)
 
 ### Pour ouvrir un environnement Gitpod en ligne avec un simple navigateur web : 
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/crystalloide/mongoDB)
+'''
+cd ~
+'''
 
-### Pour vérifier - si nécessaire - si des workspaces sont déjà utilisés dans Gitpod :
+sudo vi /etc/hosts
 
-### https://gitpod.io/workspaces
+## rajouter 
+192.168.0.21 nifi1
+192.168.0.22 nifi2
+192.168.0.23 nifi3
+192.168.0.30 nifi-registry
 
-## 1ère façon d'utiliser MongoDB : via docker : 
 
 #### Pour récupérer la dernière version de l'image mongoDB disponible dans Docker Hub : 
 
