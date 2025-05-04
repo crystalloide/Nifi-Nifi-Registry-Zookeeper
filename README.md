@@ -1,4 +1,4 @@
-## MongoDB : installation, lancement, puis utilisation dans WSL2 ou VM Ubuntu 
+## Nifi et Nifi-Registry et Zookeeper :  lancement dans WSL2 ou VM Ubuntu avec docker compose
 
 ### Rappel : nous sommes ici : [https://github.com/crystalloide/mongoDB](https://github.com/crystalloide/Nifi-Nifi-Registry-Zookeeper/edit/main/README.md)
 
