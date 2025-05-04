@@ -8,8 +8,8 @@
     rm -Rf Nifi-Nifi-Registry-Zookeeper
     
     git clone https://github.com/crystalloide/Nifi-Nifi-Registry-Zookeeper
-
-   cd Nifi-Nifi-Registry-Zookeeper
+    
+    cd Nifi-Nifi-Registry-Zookeeper
 
 #### On rajoute les futurs conteneurs dans le host de la machine : 
     sudo vi /etc/hosts
