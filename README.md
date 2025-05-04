@@ -20,9 +20,12 @@
     192.168.0.23 nifi3
     192.168.0.30 nifi-registry
 
-#### On affiche le contenu de notre fichier qui servira à docker compose :
+#### On affiche le contenu de notre fichier qui servira à docker compose : (version Apache Nifi 1.28.1 )
+    cat 'TP06c_-_Cluster_Nifi_1.28.1_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml'
+    
+#### On affiche le contenu de notre fichier qui servira à docker compose : (version Apache Nifi 2.3.0 )
     cat 'TP06d_-_Cluster_Nifi_2.3.0_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml'
-
+    
 ______________________________________________________________
 #### Configuration :
 ______________________________________________________________	
@@ -48,8 +51,12 @@ ______________________________________________________________
 #### 
 
 
+## Lançons donc l'environnement : (version Apache Nifi 2.3.0 )
 ______________________________________________________________	
-## Lançons donc l'environnement :
+    docker compose -f 'TP06c_-_Cluster_Nifi_1.28.1_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml' up -d
+
+______________________________________________________________	
+## Autre possibilité : Lançons donc l'environnement : (version Apache Nifi 2.3.0 )
 ______________________________________________________________	
     docker compose -f 'TP06d_-_Cluster_Nifi_2.3.0_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml' up -d
 
