@@ -9,7 +9,7 @@
     
     git clone https://github.com/crystalloide/Nifi-Nifi-Registry-Zookeeper
     
-    cd Nifi-Nifi-Registry-Zookeeper
+    cd ~/Nifi-Nifi-Registry-Zookeeper
 
 #### On rajoute les futurs conteneurs dans le host de la machine : 
     sudo vi /etc/hosts
@@ -38,18 +38,14 @@
 
 
 #### On affiche le contenu de notre fichier qui servira à docker compose : (version Apache Nifi 1.28.1 )
+    cd ~/Nifi-Nifi-Registry-Zookeeper
     cat 'TP06c_-_Cluster_Nifi_1.28.1_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml'
     
 #### On affiche le contenu de notre fichier qui servira à docker compose : (version Apache Nifi 2.3.0 )
+    cd ~/Nifi-Nifi-Registry-Zookeeper
     cat 'TP06d_-_Cluster_Nifi_2.3.0_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml'
     
-#### On copie sur la racine e affiche le contenu de notre fichier qui servira à docker compose : (version Apache Nifi 2.3.0 )
-    cp 'TP06c_-_Cluster_Nifi_1.28.1_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml' ~
-    cp 'TP06d_-_Cluster_Nifi_2.3.0_sécurisé_avec_Zookeeper_Nifi_registry_et_Nifi_Toolkit_dans_docker_compose.yml' ~
 
-#### Vérifions la présence de nos deux fichiers :  
-    cd ~
-    ls
 
 ______________________________________________________________
 #### Configuration :
