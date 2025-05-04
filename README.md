@@ -102,13 +102,6 @@ ______________________________________________________________
 ______________________________________________________________	
 
 ______________________________________________________________
-####  Aspects sécurité :
-####  - Modifier les mots de passe par défaut (password123)
-####  - Régénérer la clé NIFI_SENSITIVE_PROPS_KEY
-####  - Ajouter une authentification utilisateur supplémentaire
-______________________________________________________________
-
-______________________________________________________________
 ####  Ce fichier docker-compose.yml configure NiFi avec les éléments suivants :
 ####  - image officielle Apache NiFi la plus récente
 ####  - le port HTTPS 8443 du conteneur est mappé au port 8443 de l'hôte, ce qui permettra d'accéder à NiFi via https://localhost:8443/nifi1
@@ -131,12 +124,19 @@ ______________________________________________________________
 ______________________________________________________________
 
 ______________________________________________________________
+####  Aspects sécurité : il faudrait : 
+####  - Modifier les mots de passe par défaut (password123)
+####  - Régénérer la clé NIFI_SENSITIVE_PROPS_KEY
+####  - Ajouter une authentification utilisateur supplémentaire
+______________________________________________________________
+
+______________________________________________________________
 #### Pour se se connecter sur un conteneur : ici nifi1 : 
     docker exec -it nifi1 bash 
 
     cat /opt/nifi/nifi-current/conf/*.xml | grep "Connect String"
 
-exit
+    exit
 
 
 
